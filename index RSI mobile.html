@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#e8590c">
+<title>Quét phân kỳ RSI - Binance Futures</title>
+<style>
+:root{--ac:#e8590c;--ac2:#7048e8;--bd:#e3e3e8;--mut:#5f6368;--up:#15803d;--dn:#b91c1c}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:#1b1b1f;font:17px/1.5 "Segoe UI",Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%}
+.bar0{position:sticky;top:0;z-index:5;background:#fff;border-bottom:2px solid var(--bd);display:flex;justify-content:space-between;align-items:center;padding:8px 12px}
+.bar0 button{margin:0;padding:8px 14px}.clk{font-weight:700;font-size:19px;text-align:right;line-height:1.2}.clk small{display:block;font-weight:400;font-size:12px;color:var(--mut)}
+.ban{background:linear-gradient(110deg,var(--ac),var(--ac2),var(--ac));background-size:250% 100%;animation:mv 9s linear infinite;color:#fff;padding:20px 16px}
+@keyframes mv{to{background-position:250% 0}}@media(prefers-reduced-motion:reduce){.ban{animation:none}}
+.ban h1{margin:4px 0;font-size:25px}.ban p{margin:0;font-size:15px;opacity:.95}.tag{display:inline-block;background:#fff;color:var(--ac);font-weight:700;border-radius:99px;padding:1px 12px;font-size:13px}
+.dr{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;z-index:9}.dr.o{display:block}
+.dp{width:82%;max-width:330px;background:#fff;height:100%;overflow:auto;padding:10px 0}.dp b{display:block;padding:8px 18px;color:var(--mut);font-size:14px}
+.dp a{display:block;padding:14px 18px;color:#1b1b1f;text-decoration:none;font-size:18px;border-left:5px solid transparent}.dp a:active,.dp a.on{background:#f5f5f8;border-left-color:var(--ac);color:var(--ac);font-weight:600}
+main{padding:14px 12px}section{margin-bottom:34px;scroll-margin-top:60px}
+h2{font-size:23px;margin:0 0 10px;border-bottom:4px solid var(--ac);padding-bottom:4px}h2 i{font-style:normal;color:var(--ac)}h3{font-size:18px;margin:14px 0 6px}
+.card{border:2px solid var(--bd);border-radius:12px;padding:12px 14px;margin:10px 0}
+button{font:inherit;font-weight:600;background:var(--ac);color:#fff;border:0;border-radius:10px;padding:11px 20px;margin:4px 6px 4px 0}button.g{background:#fff;color:var(--ac);border:2px solid var(--ac)}button:disabled{opacity:.5}
+input,select{font:inherit;padding:6px 8px;border:2px solid var(--bd);border-radius:8px;max-width:100%}input[type=number]{width:100px}input[type=color]{padding:0;width:52px;height:38px}
+label{display:inline-block;margin:3px 12px 3px 0}.row{margin:6px 0}.row label{display:block;margin:6px 0}
+.mut,small{color:var(--mut)}.pg{height:16px;background:#eee;border-radius:8px;overflow:hidden}.pg div{height:100%;width:0;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .3s}
+.tw{overflow:auto;max-height:420px;border:2px solid var(--bd);border-radius:10px}table{border-collapse:collapse;width:100%;font-size:15px}th,td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}th{background:#f5f5f8;position:sticky;top:0}
+.L{color:var(--up);font-weight:700}.S{color:var(--dn);font-weight:700}
+.bd{display:inline-block;border-radius:8px;padding:0 9px;font-weight:700;font-size:14px;color:#fff}.reg{background:var(--ac2)}.hid{background:#0e7490}
+.rc{border:2px solid var(--bd);border-radius:12px;padding:10px 12px;margin:10px 0}.rc:active{background:#fff4ec}.rh{font-size:18px}.rv{font-size:15px}.why{font-size:13px;color:var(--mut);margin-top:4px}
+.bar{height:10px;background:#eee;border-radius:5px;overflow:hidden;margin:4px 0}.bar div{height:100%;background:var(--ac)}
+.gd{border:2px solid var(--bd);border-radius:12px;margin:10px 0;overflow:hidden}.gd h3{margin:0;padding:8px 12px;background:#f5f5f8}.gd div{display:flex;justify-content:space-between;padding:5px 12px;border-top:1px solid var(--bd);font-size:16px}
+.chip{display:inline-block;border:2px solid var(--ac);border-radius:10px;padding:2px 10px;margin:4px 6px 4px 0;font-size:15px}.chip small{display:block;font-size:12px}
+canvas{border:2px solid var(--bd);border-radius:10px;display:block}
+</style></head><body>
+<div class="bar0"><button onclick="tg()">☰ Mục lục</button><div class="clk"><span id="clk">--:--:--</span><small>Giờ Việt Nam (UTC+7)</small></div></div>
+<div class="dr" id="dr" onclick="tg()"><div class="dp"><b>MỤC LỤC</b><a href="#m1">1. Danh sách token</a><a href="#m2">2. Top tăng giá 3 ngày</a><a href="#m3">3. Quét thị trường</a><a href="#m4">4. Kết quả</a><a href="#m5">5. Biểu đồ chi tiết</a><a href="#m6">6. Cài đặt tham số quét</a></div></div>
+<div class="ban"><span class="tag">Binance Futures USDT-M</span><h1>Máy quét phân kỳ RSI</h1><p>Quét cả thị trường, chỉ giữ lại phân kỳ chất lượng cao.</p></div>
+<main>
+<section id="m1"><h2><i>1.</i> Danh sách token</h2><p>Tự tải từ Binance Futures (USDT-M vĩnh cửu), lọc theo thanh khoản 24h.</p>
+<button onclick="loadTokens()">Tải danh sách</button><span id="tokmsg" class="mut"></span>
+<div class="tw" style="margin-top:8px"><table><thead><tr><th>#</th><th>Token</th><th>Giá</th><th>24h</th><th>KL 24h</th><th>Funding</th></tr></thead><tbody id="tokb"></tbody></table></div></section>
+
+<section id="m2"><h2><i>2.</i> Top tăng giá 3 ngày</h2><p>Top 10 mỗi ngày trong 3 ngày gần nhất, rồi gộp và lọc trùng. Xét toàn bộ hợp đồng USDT-M, không lọc thanh khoản. Cột 24h lấy đúng bảng xếp hạng tăng giá của Binance; hai ngày trước tính theo nến ngày Binance (mở lúc 07:00 giờ Việt Nam).</p>
+<button onclick="loadGain()">Tải top tăng giá</button><span id="gmsg" class="mut"></span><div id="gout"></div></section>
+
+<section id="m3"><h2><i>3.</i> Quét thị trường</h2><p>Tải nến, funding, Open Interest; tính RSI, EMA, ADX, ATR; tìm và chấm điểm phân kỳ. Chỉ dùng nến đã đóng. Quét nhiều token mất vài phút, hãy giữ màn hình sáng.</p>
+<button id="bscan" onclick="scan()">Bắt đầu quét</button><button class="g" onclick="STOP=true">Dừng</button>
+<div class="pg" style="margin-top:8px"><div id="pgb"></div></div><p id="pgt" class="mut">Chưa quét.</p><small>Lần quét gần nhất: <span id="s_t">chưa quét</span></small></section>
+
+<section id="m4"><h2><i>4.</i> Kết quả</h2>
+<div class="card"><b>Loại phân kỳ</b><div class="row"><label><input type="radio" name="g" value="all" checked onchange="render()"> Tất cả</label><label><input type="radio" name="g" value="reg" onchange="render()"> Chỉ thường</label><label><input type="radio" name="g" value="hid" onchange="render()"> Chỉ ẩn</label></div>
+<div class="row"><label><input type="checkbox" class="ft" value="RU" checked onchange="render()"> Thường tăng <span id="n_RU" class="mut">(0)</span></label><label><input type="checkbox" class="ft" value="RB" checked onchange="render()"> Thường giảm <span id="n_RB" class="mut">(0)</span></label><label><input type="checkbox" class="ft" value="HU" checked onchange="render()"> Ẩn tăng <span id="n_HU" class="mut">(0)</span></label><label><input type="checkbox" class="ft" value="HB" checked onchange="render()"> Ẩn giảm <span id="n_HB" class="mut">(0)</span></label></div>
+<div class="row"><select id="fd" onchange="render()"><option value="0">Mọi hướng</option><option value="1">Chỉ Long</option><option value="-1">Chỉ Short</option></select> <select id="fl" onchange="render()"><option value="0">Từ Khá</option><option value="1">Chỉ Mạnh</option></select></div>
+<div class="row" id="ftf"></div></div>
+<p id="rcount" class="mut"></p><div id="rb"><p class="mut">Chưa có kết quả. Hãy quét ở mục 3.</p></div></section>
+
+<section id="m5"><h2><i>5.</i> Biểu đồ chi tiết</h2><p id="ctitle" class="mut">Bấm vào một thẻ kết quả để xem giá, RSI và đường phân kỳ.</p><div id="cw"><canvas id="cv" width="300" height="300"></canvas></div></section>
+
+<section id="m6"><h2><i>6.</i> Cài đặt tham số quét</h2>
+<div class="card"><b>Màu sắc</b><div class="row">Màu chính <input type="color" id="s_ac"> Màu phụ <input type="color" id="s_ac2"></div></div>
+<div class="card"><b>Tham số</b><div id="sp" class="row"></div></div>
+<div class="card"><b>Trọng số điểm</b> <small>(tổng nên bằng 100)</small><div id="sw" class="row"></div></div>
+<div class="card"><b>Khung thời gian quét</b><div id="stf" class="row"></div></div>
+<button onclick="saveS()">Lưu cài đặt</button><button class="g" onclick="resetS()">Mặc định</button><span id="smsg" class="mut"></span>
+<p><small>Cài đặt lưu riêng trên từng thiết bị. Cần quét lại để áp dụng. Phần mềm chỉ phân tích, không đặt lệnh và không phải lời khuyên đầu tư. Phân kỳ chỉ là cảnh báo sớm, cần thêm xác nhận trước khi vào lệnh.</small></p></section>
+</main>
+<script>
+const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms)),B='https://fapi.binance.com';
+const ALL=['15m','1h','4h','1d','1w'],OIP={'15m':'15m','1h':'1h','4h':'4h','1d':'1d','1w':'1d'},tfl=t=>t=='15m'?t:t.toUpperCase();
+const TN={RU:'Thường tăng',RB:'Thường giảm',HU:'Ẩn tăng',HB:'Ẩn giảm'},WN=['Chất lượng phân kỳ','Vùng RSI cực trị','Bối cảnh xu hướng','Khối lượng','OI / Funding','Vị trí vùng giá'],MAXR=[30,10,20,10,15,15];
+const DEF={ac:'#e8590c',ac2:'#7048e8',rsiP:14,L:5,R:5,gmin:5,gmax:60,age:6,minVol:20,topN:300,strong:75,fair:60,w:[30,10,20,10,15,15],tfs:['1h','4h','1d','1w']};
+let S=Object.assign({},DEF);try{Object.assign(S,JSON.parse(localStorage.getItem('rsidiv_m')||'{}'))}catch(e){}
+let TOK=[],RES=[],STOP=false;
+const fp=v=>v>=100?v.toFixed(2):v>=1?v.toFixed(4):v.toPrecision(4),vt=ms=>new Date(ms).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',hour12:false,day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+const tg=()=>$('dr').classList.toggle('o');
+setInterval(()=>$('clk').textContent=new Date().toLocaleTimeString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',hour12:false}),1000);
+async function api(p){for(let t=0;t<3;t++){try{const r=await fetch(B+p);if(r.status==429||r.status==418){await sleep(6000*(t+1));continue}if(!r.ok)throw 0;return await r.json()}catch(e){await sleep(700)}}return null}
+/* chỉ báo */
+function wil(a,p){const o=[];let s=0;a.forEach((v,i)=>{if(i<p){s+=v;o.push(null);if(i==p-1)o[i]=s/p}else o.push((o[i-1]*(p-1)+v)/p)});return o}
+function rsi(c,p){const r=Array(c.length).fill(null);let g=0,l=0;for(let i=1;i<=p;i++){const d=c[i]-c[i-1];d>0?g+=d:l-=d}g/=p;l/=p;r[p]=100-100/(1+g/(l||1e-9));for(let i=p+1;i<c.length;i++){const d=c[i]-c[i-1];g=(g*(p-1)+Math.max(d,0))/p;l=(l*(p-1)+Math.max(-d,0))/p;r[i]=100-100/(1+g/(l||1e-9))}return r}
+function ema(c,p){const k=2/(p+1);let e=c[0];return c.map((v,i)=>e=i?v*k+e*(1-k):v)}
+function trs(h,l,c){return h.map((x,i)=>i?Math.max(x-l[i],Math.abs(x-c[i-1]),Math.abs(l[i]-c[i-1])):x-l[i])}
+function atr(h,l,c,p){const a=wil(trs(h,l,c),p);return a[a.length-1]}
+function adx(h,l,c,p){const n=c.length,pd=[0],md=[0];for(let i=1;i<n;i++){const u=h[i]-h[i-1],d=l[i-1]-l[i];pd.push(u>d&&u>0?u:0);md.push(d>u&&d>0?d:0)}
+const a=wil(trs(h,l,c),p),P=wil(pd,p),M=wil(md,p),dx=[];for(let i=p-1;i<n;i++){const pi=100*P[i]/a[i],mi=100*M[i]/a[i];dx.push(100*Math.abs(pi-mi)/((pi+mi)||1))}const x=wil(dx,p);return x[x.length-1]||0}
+function pivots(r,L,R,t){const o=[];for(let i=L;i<r.length-R;i++){if(r[i]==null)continue;let ok=true;for(let j=i-L;j<=i+R;j++){if(j==i||r[j]==null)continue;if(t=='h'?r[j]>r[i]:r[j]<r[i]){ok=false;break}}if(ok)o.push(i)}return o}
+function prep(k){const t=k.map(x=>x[0]),o=k.map(x=>+x[1]),h=k.map(x=>+x[2]),l=k.map(x=>+x[3]),c=k.map(x=>+x[4]),v=k.map(x=>+x[5]),n=c.length-1,e5=ema(c,50)[n],e2=ema(c,200)[n];
+return{t,o,h,l,c,v,n,r:rsi(c,S.rsiP),atr:atr(h,l,c,14),adx:adx(h,l,c,14),trend:c[n]>e2&&e5>e2?1:c[n]<e2&&e5<e2?-1:0}}
+/* phát hiện phân kỳ */
+function detect(d){const out=[],{r,h,l,c,n}=d;
+for(const t of ['h','l']){const pv=pivots(r,S.L,S.R,t),b=pv[pv.length-1];if(b==null||n-b>S.R+S.age)continue;
+for(let q=pv.length-2;q>=Math.max(0,pv.length-3);q--){const a=pv[q],gap=b-a;if(gap<S.gmin||gap>S.gmax)continue;
+const X=t=='h'?h:l,pa=X[a],pb=X[b],ra=r[a],rb=r[b];let type=null;
+if(t=='h'){if(pb>pa&&rb<ra)type='RB';else if(pb<pa&&rb>ra)type='HB'}else{if(pb<pa&&rb>ra)type='RU';else if(pb>pa&&rb<ra)type='HU'}
+if(!type)continue;let ok=true;
+for(let i=a+1;i<b;i++){const f=(i-a)/gap,rl=ra+(rb-ra)*f,pl=pa+(pb-pa)*f;if(t=='h'?(r[i]>rl||c[i]>pl):(r[i]<rl||c[i]<pl)){ok=false;break}}
+if(ok){out.push({a,b,ra,rb,pa,pb,type,t});break}}}
+return out}
+/* chấm điểm */
+const avg=(v,i)=>(v[i-1]+v[i]+v[i+1])/3;
+function score(c,d,h,t,oi){const{a,b,ra,rb,pa,pb,type}=c,dir=(type=='RU'||type=='HU')?1:-1,reg=type[0]=='R',at=d.atr,why=[];
+const rd=Math.abs(rb-ra),pd=Math.abs(pb-pa)/at;
+const q=Math.min(30,Math.min(15,rd*1.5)+Math.min(10,pd*3)+(reg?5:3));why.push(`RSI lệch ${rd.toFixed(1)}, giá lệch ${pd.toFixed(1)} ATR`);
+const heat=dir<0?ra:100-ra,z=reg?(heat>=70?10:heat>=60?5:0):(heat>=60?6:heat>=50?3:0);why.push(`RSI pivot đầu ${ra.toFixed(0)}`);
+const s=d.trend,st=d.adx>=25;let tr=reg?(s==0?14:s==-dir?(st?6:12):10):(s==dir?(st?16:12):s==0?7:3);
+if(h&&h.trend==dir){tr+=4;why.push('khung lớn đồng thuận')}tr=Math.min(20,tr);why.push(`xu hướng ${s>0?'tăng':s<0?'giảm':'ngang'}, ADX ${d.adx.toFixed(0)}`);
+const vr=avg(d.v,b)/avg(d.v,a),vo=vr<.8?10:vr<1?7:3;why.push(`khối lượng ${(vr*100).toFixed(0)}% nhịp đầu`);
+const f=t.f,fs=dir<0?(f>=.03?8:f>=.01?5:2):(f<=-.03?8:f<=-.01?5:2);let os=3;
+if(oi&&oi.length>3){const mx=Math.max(...oi),dd=(mx-oi[oi.length-1])/mx*100;os=dd>=3?7:dd>=1?4:1;why.push(`OI giảm ${dd.toFixed(1)}% từ đỉnh`)}why.push(`funding ${f.toFixed(3)}%`);
+const of=Math.min(15,fs+os),ref=h||d,lv=[];
+pivots(ref.h,5,5,'h').filter(i=>h||i<a-1).forEach(i=>lv.push(ref.h[i]));pivots(ref.l,5,5,'l').filter(i=>h||i<a-1).forEach(i=>lv.push(ref.l[i]));
+const dist=lv.length?Math.min(...lv.map(x=>Math.abs(pb-x)))/at:99,sr=dist<=1?15:dist<=2?10:dist<=3?5:0;if(sr)why.push(`gần vùng giá quan trọng (${dist.toFixed(1)} ATR)`);
+const raw=[q,z,tr,vo,of,sr],tot=Math.round(raw.reduce((s,x,i)=>s+x/MAXR[i]*S.w[i],0)),fr=Math.max(0,d.n+1-120);
+return{sym:t.s,tf:c.tf,type,dir,reg,score:tot,why,px:d.c[d.n],sl:dir>0?d.l[b]-at:d.h[b]+at,time:d.t[b],pa,pb,a:a-fr,b:b-fr,
+snap:{t:d.t.slice(fr),o:d.o.slice(fr),h:d.h.slice(fr),l:d.l.slice(fr),c:d.c.slice(fr),r:d.r.slice(fr)}}}
+/* token */
+async function loadTokens(){$('tokmsg').textContent=' Đang tải...';
+const [ex,tk,pi]=await Promise.all([api('/fapi/v1/exchangeInfo'),api('/fapi/v1/ticker/24hr'),api('/fapi/v1/premiumIndex')]);
+if(!ex||!tk){$('tokmsg').textContent=' Không kết nối được Binance. Kiểm tra mạng hoặc VPN.';return false}
+const ok=new Set(ex.symbols.filter(x=>x.quoteAsset=='USDT'&&x.contractType=='PERPETUAL'&&x.status=='TRADING').map(x=>x.symbol)),fm={};(pi||[]).forEach(x=>fm[x.symbol]=+x.lastFundingRate*100);
+const all=tk.filter(x=>ok.has(x.symbol)).map(x=>({s:x.symbol,vol:+x.quoteVolume,chg:+x.priceChangePercent,px:+x.lastPrice,f:fm[x.symbol]||0}));
+TOK=all.filter(x=>x.vol>=S.minVol*1e6).sort((a,b)=>b.vol-a.vol).slice(0,S.topN);
+$('tokmsg').textContent=` ${all.length} hợp đồng, ${TOK.length} token đạt thanh khoản.`;
+$('tokb').innerHTML=TOK.map((x,i)=>`<tr><td>${i+1}</td><td><b>${x.s}</b></td><td>${fp(x.px)}</td><td class="${x.chg>=0?'L':'S'}">${x.chg.toFixed(1)}%</td><td>${(x.vol/1e6).toFixed(0)}tr</td><td>${x.f.toFixed(3)}%</td></tr>`).join('');return true}
+/* top gainer 3 ngày */
+async function loadGain(){$('gmsg').textContent=' Đang tải...';
+const [ex,tk]=await Promise.all([api('/fapi/v1/exchangeInfo'),api('/fapi/v1/ticker/24hr')]);
+if(!ex||!tk){$('gmsg').textContent=' Không kết nối được Binance. Kiểm tra mạng hoặc VPN.';return}
+const ok=new Set(ex.symbols.filter(x=>x.quoteAsset=='USDT'&&x.contractType=='PERPETUAL'&&x.status=='TRADING').map(x=>x.symbol)),
+all=tk.filter(x=>ok.has(x.symbol)).map(x=>({s:x.symbol,c24:+x.priceChangePercent})),q=[...all],data={};let done=0;
+const wk=async()=>{while(q.length){const t=q.shift(),k=await api(`/fapi/v1/klines?symbol=${t.s}&interval=1d&limit=3`);await sleep(80);if(k)data[t.s]=k.map(x=>({t:x[0],p:(+x[4]-+x[1])/+x[1]*100}));done++;$('gmsg').textContent=` Đang tải ${done}/${all.length}`}};
+await Promise.all([wk(),wk(),wk(),wk()]);
+const ds=[...new Set(Object.values(data).flatMap(a=>a.map(y=>y.t)))].sort((a,b)=>b-a),dl=t=>new Date(t).toLocaleDateString('vi-VN',{timeZone:'UTC',day:'2-digit',month:'2-digit'});
+const cols=[{n:'24h gần nhất (đúng top gainer Binance)',l:'24h',L:all.map(x=>({s:x.s,p:x.c24}))}];
+[ds[1],ds[2]].filter(Boolean).forEach(t=>cols.push({n:'Ngày '+dl(t),l:dl(t),L:all.map(x=>({s:x.s,p:((data[x.s]||[]).find(y=>y.t==t)||{}).p})).filter(x=>x.p!=null)}));
+const mg={};let h='';
+cols.forEach(c=>{const L=c.L.sort((a,b)=>b.p-a.p).slice(0,10);
+h+=`<div class="gd"><h3>${c.n}</h3>`+L.map((x,j)=>`<div><span>${j+1}. <b>${x.s}</b></span><span class="${x.p>=0?'L':'S'}">${x.p>=0?'+':''}${x.p.toFixed(1)}%</span></div>`).join('')+'</div>';
+L.forEach(x=>{(mg[x.s]=mg[x.s]||{d:[],b:-1e9}).d.push(c.l);mg[x.s].b=Math.max(mg[x.s].b,x.p)})});
+const m=Object.entries(mg).sort((a,b)=>b[1].d.length-a[1].d.length||b[1].b-a[1].b);
+h+=`<h3>Danh sách gộp, đã lọc trùng (${m.length} token)</h3>`+m.map(([s,v])=>`<span class="chip"><b>${s}</b>${v.d.length>1?` x${v.d.length}`:''}<small>${v.d.join(', ')} | tốt nhất +${v.b.toFixed(1)}%</small></span>`).join('');
+$('gout').innerHTML=h;$('gmsg').textContent=` Xong, đã xét toàn bộ ${all.length} hợp đồng USDT-M.`}
+/* quét */
+async function doSym(t){const D={};
+for(const tf of S.tfs){const k=await api(`/fapi/v1/klines?symbol=${t.s}&interval=${tf}&limit=300`);await sleep(120);if(!k||k.length<80)continue;if(k[k.length-1][6]>Date.now())k.pop();D[tf]=prep(k)}
+const tfs=S.tfs.filter(x=>D[x]),cands=[];tfs.forEach((tf,i)=>detect(D[tf]).forEach(d=>cands.push({...d,tf,i})));
+if(!cands.length)return;const oiC={};
+for(const c of cands){const p=OIP[c.tf];if(!(p in oiC)){const o=await api(`/fapi/futures/data/openInterestHist?symbol=${t.s}&period=${p}&limit=30`);await sleep(120);oiC[p]=o?o.map(x=>+x.sumOpenInterest):null}}
+cands.forEach(c=>{const htf=tfs[c.i+1],r=score(c,D[c.tf],htf?D[htf]:null,t,oiC[OIP[c.tf]]);if(r.score>=S.fair){r.id=RES.length;RES.push(r)}})}
+async function scan(){if(!await loadTokens())return;RES=[];STOP=false;$('bscan').disabled=true;let done=0;const q=[...TOK];
+const wk=async()=>{while(q.length&&!STOP){const t=q.shift();try{await doSym(t)}catch(e){}done++;$('pgb').style.width=(done/TOK.length*100)+'%';$('pgt').textContent=`Đã quét ${done}/${TOK.length} token, ${RES.length} tín hiệu.`;if(done%10==0)render()}};
+await Promise.all([wk(),wk(),wk()]);$('bscan').disabled=false;$('pgt').textContent=(STOP?'Đã dừng. ':'Hoàn tất. ')+`${RES.length} tín hiệu đạt ngưỡng.`;$('s_t').textContent=vt(Date.now())+' (UTC+7)';render();location.hash='#m4'}
+/* kết quả */
+function render(){const g=document.querySelector('input[name=g]:checked').value,ft=[...document.querySelectorAll('.ft:checked')].map(x=>x.value),fr=[...document.querySelectorAll('.fr:checked')].map(x=>x.value),fd=+$('fd').value,fl=+$('fl').value;
+['RU','RB','HU','HB'].forEach(k=>$('n_'+k).textContent=`(${RES.filter(r=>r.type==k).length})`);
+const rows=RES.filter(r=>(g=='all'||(g=='reg')==r.reg)&&ft.includes(r.type)&&fr.includes(r.tf)&&(!fd||r.dir==fd)&&(!fl||r.score>=S.strong)).sort((a,b)=>b.score-a.score);
+$('rcount').textContent=`Hiển thị ${rows.length}/${RES.length} tín hiệu.`;
+$('rb').innerHTML=rows.length?rows.map(r=>`<div class="rc" onclick="chart(${r.id})"><div class="rh"><b>${r.sym}</b> ${tfl(r.tf)} <span class="bd ${r.reg?'reg':'hid'}">${TN[r.type]}</span> <span class="${r.dir>0?'L':'S'}">${r.dir>0?'LONG':'SHORT'}</span></div><div class="bar"><div style="width:${r.score}%"></div></div><div class="rv"><b>${r.score}</b> điểm - ${r.score>=S.strong?'Mạnh':'Khá'}</div><div class="rv">Giá ${fp(r.px)} | Cắt lỗ ${fp(r.sl)}</div><div class="rv">Pivot: ${vt(r.time)}</div><div class="why">${r.why.join('; ')}</div></div>`).join(''):'<p class="mut">Không có tín hiệu phù hợp bộ lọc.</p>'}
+/* biểu đồ */
+function chart(id){const r=RES[id],s=r.snap,n=s.c.length,cv=$('cv'),x=cv.getContext('2d'),W=Math.min($('cw').clientWidth,900),H=Math.round(W*1.2),d=devicePixelRatio||1;
+cv.width=W*d;cv.height=H*d;cv.style.width=W+'px';cv.style.height=H+'px';x.setTransform(d,0,0,d,0,0);location.hash='#m5';
+$('ctitle').innerHTML=`<b>${r.sym}</b> ${tfl(r.tf)} - ${TN[r.type]} - ${r.score} điểm<br>Cắt lỗ gợi ý ${fp(r.sl)}`;
+x.fillStyle='#fff';x.fillRect(0,0,W,H);const PL=6,PR=56,ph=H*.58,rt=ph+26,rh=H-rt-26,hi=Math.max(...s.h),lo=Math.min(...s.l),Y=v=>8+(hi-v)/(hi-lo)*(ph-16),Xi=i=>PL+(i+.5)*(W-PL-PR)/n,bw=Math.max(1.5,(W-PL-PR)/n*.65),Yr=v=>rt+(100-v)/100*rh;
+x.font='11px Segoe UI';x.fillStyle='#5f6368';
+for(let k=0;k<=3;k++){const v=lo+(hi-lo)*k/3;x.strokeStyle='#eee';x.beginPath();x.moveTo(PL,Y(v));x.lineTo(W-PR,Y(v));x.stroke();x.fillText(fp(v),W-PR+3,Y(v)+4)}
+for(let i=0;i<n;i++){const up=s.c[i]>=s.o[i];x.strokeStyle=x.fillStyle=up?'#15803d':'#b91c1c';x.beginPath();x.moveTo(Xi(i),Y(s.h[i]));x.lineTo(Xi(i),Y(s.l[i]));x.stroke();x.fillRect(Xi(i)-bw/2,Math.min(Y(s.o[i]),Y(s.c[i])),bw,Math.max(1,Math.abs(Y(s.o[i])-Y(s.c[i]))))}
+[30,50,70].forEach(v=>{x.strokeStyle='#ccc';x.setLineDash([5,4]);x.beginPath();x.moveTo(PL,Yr(v));x.lineTo(W-PR,Yr(v));x.stroke();x.setLineDash([]);x.fillStyle='#5f6368';x.fillText(v,W-PR+3,Yr(v)+4)});
+x.strokeStyle='#7048e8';x.lineWidth=1.5;x.beginPath();let st=0;s.r.forEach((v,i)=>{if(v==null)return;st?x.lineTo(Xi(i),Yr(v)):x.moveTo(Xi(i),Yr(v));st=1});x.stroke();
+x.strokeStyle=S.ac;x.lineWidth=3;x.beginPath();x.moveTo(Xi(r.a),Y(r.pa));x.lineTo(Xi(r.b),Y(r.pb));x.stroke();
+x.beginPath();x.moveTo(Xi(r.a),Yr(s.r[r.a]));x.lineTo(Xi(r.b),Yr(s.r[r.b]));x.stroke();x.lineWidth=1;
+[r.a,r.b].forEach(i=>{x.fillStyle=S.ac;x.beginPath();x.arc(Xi(i),Yr(s.r[i]),4,0,7);x.fill()});
+x.fillStyle='#5f6368';for(let k=0;k<4;k++){const i=Math.floor(k*(n-1)/3);x.fillText(new Date(s.t[i]).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',hour12:false,day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),Math.min(Math.max(Xi(i)-30,2),W-PR-70),H-6)}x.fillText('RSI '+S.rsiP,PL+2,rt-6)}
+/* cài đặt */
+const PF=[['rsiP','Chu kỳ RSI'],['L','Pivot nến trái'],['R','Pivot nến phải'],['gmin','Khoảng cách pivot tối thiểu'],['gmax','Khoảng cách pivot tối đa'],['age','Độ tươi tối đa (nến)'],['minVol','Thanh khoản tối thiểu (triệu USDT)'],['topN','Số token quét tối đa'],['strong','Ngưỡng Mạnh'],['fair','Ngưỡng Khá']];
+function applyC(){document.documentElement.style.setProperty('--ac',S.ac);document.documentElement.style.setProperty('--ac2',S.ac2)}
+function buildS(){$('s_ac').value=S.ac;$('s_ac2').value=S.ac2;
+$('sp').innerHTML=PF.map(([k,n])=>`<label>${n}<br><input type="number" id="p_${k}" value="${S[k]}"></label>`).join('');
+$('sw').innerHTML=WN.map((n,i)=>`<label>${n}<br><input type="number" id="w_${i}" value="${S.w[i]}"></label>`).join('');
+$('stf').innerHTML=ALL.map(t=>`<label><input type="checkbox" class="stf" value="${t}" ${S.tfs.includes(t)?'checked':''}> ${tfl(t)}</label>`).join('');
+$('ftf').innerHTML=ALL.map(t=>`<label><input type="checkbox" class="fr" value="${t}" checked onchange="render()"> ${tfl(t)}</label>`).join('')}
+function saveS(){S.ac=$('s_ac').value;S.ac2=$('s_ac2').value;PF.forEach(([k])=>S[k]=Math.max(1,+$('p_'+k).value||DEF[k]));S.w=WN.map((_,i)=>+$('w_'+i).value||0);
+const t=[...document.querySelectorAll('.stf:checked')].map(x=>x.value);S.tfs=t.length?t:DEF.tfs;applyC();try{localStorage.setItem('rsidiv_m',JSON.stringify(S))}catch(e){}buildS();$('smsg').textContent=' Đã lưu. Quét lại để áp dụng.'}
+function resetS(){S=Object.assign({},DEF);try{localStorage.removeItem('rsidiv_m')}catch(e){}applyC();buildS();$('smsg').textContent=' Đã khôi phục mặc định.'}
+$('s_ac').oninput=e=>{S.ac=e.target.value;applyC()};$('s_ac2').oninput=e=>{S.ac2=e.target.value;applyC()};
+applyC();buildS();
+</script></body></html>
